@@ -5,21 +5,44 @@ import 'package:traffic/resources/routes_screens.dart';
 import 'package:traffic/resources/strings.dart';
 import 'package:traffic/resources/widgets/appbar.dart';
 import 'package:traffic/resources/widgets/button.dart';
+import 'package:traffic/view_models/controller.dart';
 import 'package:traffic/view_models/project_detail.dart';
+import 'package:traffic/views/project_item.dart';
 
 import '../resources/dimens.dart';
 import '../resources/widgets/detail_project.dart';
 import '../view_models/color_view_model.dart';
 import '../view_models/textstyle_view_model.dart';
 
-class ProjectScreen extends StatelessWidget {
+class ProjectScreen extends StatefulWidget {
   const ProjectScreen({super.key});
+
+  @override
+  State<ProjectScreen> createState() => _ProjectScreenState();
+}
+
+class _ProjectScreenState extends State<ProjectScreen> {
+  int isFetchId = -1;
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Map<String, dynamic> argument =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      isFetchId = argument['isFetchId'];
+      setState(() {});
+    });
+
+    print(isFetchId);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final providerColor = Provider.of<ColorViewModel>(context);
     final providerTextStyle = Provider.of<TextStyleViewModel>(context);
     final providerDetailProject = Provider.of<DetailProjectViewModel>(context);
+    final providerController = Provider.of<Controller>(context);
 
     return Scaffold(
       appBar:
@@ -28,7 +51,7 @@ class ProjectScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         height: ScreenSize.height,
         width: ScreenSize.width,
-        decoration: providerColor.gradientColorBackground,
+        decoration: providerColor.isGradient ? providerColor.gradientColorBackground : null,
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -56,8 +79,11 @@ class ProjectScreen extends StatelessWidget {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectId,
-                          data:
-                              providerDetailProject.projectDetail.id.toString(),
+                          data: isFetchId == 1
+                              ? providerController.projectDetailID!.id
+                                  .toString()
+                              : providerDetailProject.projectDetail.id
+                                  .toString(),
                         ),
                         const SizedBox(
                           height: sizedBoxMedium,
@@ -73,8 +99,11 @@ class ProjectScreen extends StatelessWidget {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectStartDay,
-                          data: providerDetailProject.projectDetail.startday
-                              .toString(),
+                          data: isFetchId == 1
+                              ? providerController.projectDetailID!.startday
+                                  .toString()
+                              : providerDetailProject.projectDetail.startday
+                                  .toString(),
                         ),
                         const SizedBox(
                           height: sizedBoxMedium,
@@ -82,8 +111,11 @@ class ProjectScreen extends StatelessWidget {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectEndDay,
-                          data: providerDetailProject.projectDetail.deadline
-                              .toString(),
+                          data: isFetchId == 1
+                              ? providerController.projectDetailID!.deadline
+                                  .toString()
+                              : providerDetailProject.projectDetail.deadline
+                                  .toString(),
                         ),
                         const SizedBox(
                           height: sizedBoxMedium,
@@ -91,8 +123,11 @@ class ProjectScreen extends StatelessWidget {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectBudget,
-                          data: providerDetailProject.projectDetail.budget
-                              .toString(),
+                          data: isFetchId == 1
+                              ? providerController.projectDetailID!.budget
+                                  .toString()
+                              : providerDetailProject.projectDetail.budget
+                                  .toString(),
                         ),
                         const SizedBox(
                           height: sizedBoxMedium,
@@ -100,8 +135,11 @@ class ProjectScreen extends StatelessWidget {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectLocation,
-                          data:
-                              providerDetailProject.projectDetail.id.toString(),
+                          data: isFetchId == 1
+                              ? providerController.projectDetailID!.id
+                                  .toString()
+                              : providerDetailProject.projectDetail.id
+                                  .toString(),
                         ),
                         const SizedBox(
                           height: sizedBoxMedium,
@@ -109,8 +147,13 @@ class ProjectScreen extends StatelessWidget {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectLabor,
-                          data: providerDetailProject.projectDetail.budget
-                              .toString(),
+                          data: isFetchId == 1
+                              ? providerController
+                                  .projectDetailID!.people!.length
+                                  .toString()
+                              : providerDetailProject
+                                  .projectDetail.people!.length
+                                  .toString(),
                         ),
                         const SizedBox(
                           height: sizedBoxMedium,
@@ -118,7 +161,10 @@ class ProjectScreen extends StatelessWidget {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectMaterial,
-                          data: providerDetailProject.projectDetail.material,
+                          data: isFetchId == 1
+                              ? providerController.projectDetailID!.material
+                                  .toString()
+                              : providerDetailProject.projectDetail.material,
                         ),
                         const SizedBox(
                           height: sizedBoxMedium,
@@ -126,7 +172,10 @@ class ProjectScreen extends StatelessWidget {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectDescription,
-                          data: providerDetailProject.projectDetail.description,
+                          data: isFetchId == 1
+                              ? providerController.projectDetailID!.description
+                                  .toString()
+                              : providerDetailProject.projectDetail.description,
                         ),
                       ],
                     ),
@@ -150,51 +199,113 @@ class ProjectScreen extends StatelessWidget {
                 iconSuffix: providerDetailProject.iconProjectItem,
                 colorIcon: colorTextBlack,
               ),
-              Consumer<DetailProjectViewModel>(
-                  builder: (context, providerDetailProject, _) =>
-                      providerDetailProject.isShowProjectItem
-                          ? SizedBox(
-                              height: ScreenSize.height * 0.3,
-                              child: ListView.builder(
-                                itemCount: providerDetailProject
-                                    .projectDetail.projects.length,
-                                itemBuilder: (context, index) => Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: sizedBoxSmall,
+              isFetchId == 1
+                  ? Consumer<Controller>(
+                      builder: (context, providerController, _) =>
+                          (providerDetailProject.isShowProjectItem &&
+                                  providerController
+                                          .projectDetailID!.projects!.length !=
+                                      0)
+                              ? SizedBox(
+                                  height: ScreenSize.height * 0.3,
+                                  child: ListView.builder(
+                                    itemCount: providerController
+                                        .projectDetailID!.projects!.length,
+                                    itemBuilder: (context, index) => Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: sizedBoxSmall,
+                                        ),
+                                        CustomButton(
+                                          text:
+                                              "Hạng mục ${providerController.projectDetailID!.projects![index]!.id}",
+                                          function: () async {
+                                            Navigator.pushNamed(context,
+                                                routeViewProjectItemPage,
+                                                arguments: providerController
+                                                    .projectDetailID!
+                                                    .projects![index]);
+                                          },
+                                          height: heightButton,
+                                          width: ScreenSize.width * 0.7,
+                                          textStyle: providerTextStyle
+                                              .textStyleTextBold(),
+                                          borderRadius: borderRadiusButtonLarge,
+                                          color: colorButton,
+                                        ),
+                                        const SizedBox(
+                                          height: sizedBoxSmall,
+                                        ),
+                                        index + 1 !=
+                                                providerController
+                                                    .projectDetailID!
+                                                    .projects!
+                                                    .length
+                                            ? Divider(
+                                                indent: ScreenSize.width * 0.1,
+                                                endIndent:
+                                                    ScreenSize.width * 0.1,
+                                                color: Colors.black,
+                                                height: 4,
+                                                // thickness: 4,
+                                              )
+                                            : Container(),
+                                      ],
                                     ),
-                                    CustomButton(
-                                      text: "Hạng mục ${index + 1}",
-                                      function: () {
-                                        Navigator.pushNamed(
-                                            context, routeViewProjectItemPage);
-                                      },
-                                      height: heightButton,
-                                      width: ScreenSize.width * 0.7,
-                                      textStyle:
-                                          providerTextStyle.textStyleTextBold(),
-                                      borderRadius: borderRadiusButtonLarge,
-                                      color: colorButton,
+                                  ),
+                                )
+                              : Container())
+                  : Consumer<DetailProjectViewModel>(
+                      builder: (context, providerDetailProject, _) =>
+                          (providerDetailProject.isShowProjectItem &&
+                                  providerDetailProject
+                                          .projectDetail.projects!.length !=
+                                      0)
+                              ? SizedBox(
+                                  height: ScreenSize.height * 0.3,
+                                  child: ListView.builder(
+                                    itemCount: providerDetailProject
+                                        .projectDetail.projects!.length,
+                                    itemBuilder: (context, index) => Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: sizedBoxSmall,
+                                        ),
+                                        CustomButton(
+                                          text: "Hạng mục ${index + 1}",
+                                          function: () {
+                                            Navigator.pushNamed(context,
+                                                routeViewProjectItemPage);
+                                          },
+                                          height: heightButton,
+                                          width: ScreenSize.width * 0.7,
+                                          textStyle: providerTextStyle
+                                              .textStyleTextBold(),
+                                          borderRadius: borderRadiusButtonLarge,
+                                          color: colorButton,
+                                        ),
+                                        const SizedBox(
+                                          height: sizedBoxSmall,
+                                        ),
+                                        index + 1 !=
+                                                providerDetailProject
+                                                    .projectDetail
+                                                    .projects!
+                                                    .length
+                                            ? Divider(
+                                                indent: ScreenSize.width * 0.1,
+                                                endIndent:
+                                                    ScreenSize.width * 0.1,
+                                                color: Colors.black,
+                                                height: 4,
+                                                // thickness: 4,
+                                              )
+                                            : Container(),
+                                      ],
                                     ),
-                                    const SizedBox(
-                                      height: sizedBoxSmall,
-                                    ),
-                                    index + 1 !=
-                                            providerDetailProject
-                                                .projectDetail.projects.length
-                                        ? Divider(
-                                            indent: ScreenSize.width * 0.1,
-                                            endIndent: ScreenSize.width * 0.1,
-                                            color: Colors.black,
-                                            height: 4,
-                                            // thickness: 4,
-                                          )
-                                        : Container(),
-                                  ],
-                                ),
-                              ),
-                            )
-                          : Container())
+                                  ),
+                                )
+                              : Container())
             ],
           ),
         ),

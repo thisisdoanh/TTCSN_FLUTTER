@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:traffic/models/project_detail.dart';
 import 'package:traffic/models/user.dart';
 
 class UserInforViewModel with ChangeNotifier {
@@ -9,7 +10,8 @@ class UserInforViewModel with ChangeNotifier {
     address: "Số 34 Ngõ 132 Nguyên Xá, Minh Khai, Bắc Từ Liêm, Hà Nội",
     username: "thisisdoanh",
     email: "tranquocdoanhvq@gmail.com",
-    password: '12321321',
     phone: '123',
+    id: 1,
+    project: null,
   );
 }

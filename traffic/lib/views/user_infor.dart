@@ -7,6 +7,7 @@ import 'package:traffic/resources/widgets/appbar.dart';
 import 'package:traffic/resources/widgets/button.dart';
 import 'package:traffic/resources/widgets/detail_project.dart';
 import 'package:traffic/resources/widgets/text_form_field.dart';
+import 'package:traffic/view_models/controller.dart';
 import 'package:traffic/view_models/user_infor_view_model.dart';
 
 import '../resources/dimens.dart';
@@ -21,6 +22,7 @@ class UserInfoScreen extends StatelessWidget {
     final providerUser = Provider.of<UserInforViewModel>(context);
     final providerColor = Provider.of<ColorViewModel>(context);
     final providerTextStyle = Provider.of<TextStyleViewModel>(context);
+    final providerController = Provider.of<Controller>(context);
 
     return Scaffold(
       appBar:
@@ -29,7 +31,7 @@ class UserInfoScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         height: ScreenSize.height,
         width: ScreenSize.width,
-        decoration: providerColor.gradientColorBackground,
+        decoration: providerColor.isGradient ? providerColor.gradientColorBackground : null,
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -39,9 +41,7 @@ class UserInfoScreen extends StatelessWidget {
               const CircleAvatar(
                 radius: 80,
                 backgroundColor: Colors.white,
-                backgroundImage: NetworkImage(
-                    "https://blogchiasekienthuc.com/wp-content/uploads/2022/12/hinh-nen-may-tinh-fantasy-4k-blogchiasekienthuc.com-1.png",
-                    scale: 1),
+                backgroundImage: AssetImage(assetImgUser),
               ),
               const SizedBox(
                 height: sizedBoxLarge,
@@ -49,7 +49,7 @@ class UserInfoScreen extends StatelessWidget {
               CustomDetail2Column(
                 providerTextStyle: providerTextStyle,
                 title: "$textName:",
-                data: providerUser.userInfo.name,
+                data: providerController.user?.name ?? "",
               ),
               const SizedBox(
                 height: sizedBoxMedium,
@@ -57,7 +57,7 @@ class UserInfoScreen extends StatelessWidget {
               CustomDetail2Column(
                 providerTextStyle: providerTextStyle,
                 title: textAge,
-                data: providerUser.userInfo.age.toString(),
+                data: providerController.user?.age.toString() ?? "",
               ),
               const SizedBox(
                 height: sizedBoxMedium,
@@ -65,7 +65,7 @@ class UserInfoScreen extends StatelessWidget {
               CustomDetail2Column(
                 providerTextStyle: providerTextStyle,
                 title: textGender,
-                data: providerUser.userInfo.gender,
+                data: providerController.user?.gender.toString() ?? "",
               ),
               const SizedBox(
                 height: sizedBoxMedium,
@@ -73,7 +73,7 @@ class UserInfoScreen extends StatelessWidget {
               CustomDetail2Column(
                 providerTextStyle: providerTextStyle,
                 title: textAddress,
-                data: providerUser.userInfo.address,
+                data: providerController.user?.address.toString() ?? "",
               ),
               const SizedBox(
                 height: sizedBoxMedium,
@@ -81,7 +81,7 @@ class UserInfoScreen extends StatelessWidget {
               CustomDetail2Column(
                 providerTextStyle: providerTextStyle,
                 title: textAccount,
-                data: providerUser.userInfo.username,
+                data: providerController.user?.username.toString() ?? "",
               ),
               const SizedBox(
                 height: sizedBoxMedium,
@@ -89,7 +89,7 @@ class UserInfoScreen extends StatelessWidget {
               CustomDetail2Column(
                 providerTextStyle: providerTextStyle,
                 title: textEmail,
-                data: providerUser.userInfo.email,
+                data: providerController.user?.email.toString() ?? "",
               ),
               const SizedBox(
                 height: sizedBoxLarge,

@@ -15,8 +15,16 @@ ProjectDetail _$ProjectDetailFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String,
       startday: DateTime.parse(json['startday'] as String),
       deadline: DateTime.parse(json['deadline'] as String),
-      projects:
-          (json['projects'] as List<dynamic>).map((e) => e as String).toList(),
+      projects: (json['projects'] as List<dynamic>?)
+          ?.map((e) => e == null
+              ? null
+              : ProjectDetail.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      people: (json['people'] as List<dynamic>?)
+          ?.map((e) =>
+              e == null ? null : User.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      status: json['status'] as String?,
     );
 
 Map<String, dynamic> _$ProjectDetailToJson(ProjectDetail instance) =>
@@ -28,5 +36,7 @@ Map<String, dynamic> _$ProjectDetailToJson(ProjectDetail instance) =>
       'description': instance.description,
       'startday': instance.startday.toIso8601String(),
       'deadline': instance.deadline.toIso8601String(),
+      'status': instance.status,
+      'people': instance.people,
       'projects': instance.projects,
     };

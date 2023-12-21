@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../dimens.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  const CustomTextFormField({
+  CustomTextFormField({
     super.key,
     required this.width,
     required this.validator,
@@ -16,6 +16,7 @@ class CustomTextFormField extends StatelessWidget {
     required this.textInputAction,
     this.suffixIcon,
     this.functionSuffixIcon,
+    this.isReadOnly, this.onPressTFF,
   });
   final FormFieldValidator validator;
   final double width;
@@ -26,6 +27,8 @@ class CustomTextFormField extends StatelessWidget {
   final TextInputAction textInputAction;
   final String? suffixIcon;
   final Function? functionSuffixIcon;
+  bool? isReadOnly = false;
+  final Function? onPressTFF;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +39,12 @@ class CustomTextFormField extends StatelessWidget {
       width: width,
       padding: const EdgeInsets.all(padding0),
       child: TextFormField(
+        onTap: () {
+          if (onPressTFF != null) {
+            onPressTFF!();
+          }
+        },
+        readOnly: isReadOnly ?? false,
         textInputAction: textInputAction,
         obscureText: isHide,
         validator: validator,

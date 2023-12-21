@@ -4,11 +4,13 @@ import 'package:traffic/resources/components.dart';
 import 'package:traffic/resources/dimens.dart';
 import 'package:traffic/resources/routes_screens.dart';
 import 'package:traffic/view_models/color_view_model.dart';
+import 'package:traffic/view_models/controller.dart';
 import 'package:traffic/view_models/forgot_password_view_model.dart';
 import 'package:traffic/view_models/map_view_model.dart';
 import 'package:traffic/view_models/register_view_model.dart';
 import 'package:traffic/view_models/textstyle_view_model.dart';
 import 'package:traffic/view_models/user_infor_view_model.dart';
+import 'package:traffic/views/add_project.dart';
 import 'package:traffic/views/edit_user_info.dart';
 import 'package:traffic/views/forgot_password.dart';
 import 'package:traffic/views/home_page.dart';
@@ -22,6 +24,8 @@ import 'package:traffic/views/test_view.dart';
 import 'package:traffic/views/user_infor.dart';
 import 'package:traffic/views/view_map.dart';
 
+import 'view_models/add_project_item_view_model.dart';
+import 'view_models/add_project_view_model.dart';
 import 'view_models/login_view_model.dart';
 import 'view_models/project_detail.dart';
 import 'views/welcome.dart';
@@ -53,6 +57,15 @@ void main() {
       ChangeNotifierProvider(
         create: (context) => UserInforViewModel(),
       ),
+      ChangeNotifierProvider(
+        create: (context) => Controller(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => AddProjectViewModel(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => AddProjectItemViewModel(),
+      ),
     ],
     child: const MyApp(),
   ));
@@ -77,8 +90,9 @@ class MyApp extends StatelessWidget {
         ),
         darkTheme: ThemeData(
           brightness: Brightness.dark,
+          useMaterial3: true,
         ),
-        themeMode: ThemeMode.dark,
+        themeMode: Provider.of<ColorViewModel>(context).isDarkMode ? ThemeMode.dark : ThemeMode.light,
         initialRoute: routeLogin,
         onGenerateRoute: (settings) {
           switch (settings.name) {
@@ -95,17 +109,21 @@ class MyApp extends StatelessWidget {
             case routeViewMapPage:
               return navigateToAScreen(const ViewMapScreen());
             case routeViewProjectPage:
-              return navigateToAScreen(const ProjectScreen());
+              return navigateToAScreen(
+                  const ProjectScreen(), settings.arguments);
             case routeViewProjectItemPage:
-              return navigateToAScreen(const ProjectItemScreen());
+              return navigateToAScreen(
+                  const ProjectItemScreen(), settings.arguments);
             case routeUserInfor:
               return navigateToAScreen(const UserInfoScreen());
             case routeSettings:
-              return navigateToAScreen(const SettingScreen());
+              return navigateToAScreen(SettingScreen());
             case routeEditUserInfor:
               return navigateToAScreen(EditUserInfoScreen());
             case routeViewListProject:
               return navigateToAScreen(const ListProjectScreen());
+            case routeAddProject:
+              return navigateToAScreen(AddNewProject());
             case '/test':
               return navigateToAScreen(const TestView());
 

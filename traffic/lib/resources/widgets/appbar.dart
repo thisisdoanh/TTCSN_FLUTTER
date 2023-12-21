@@ -29,7 +29,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     final providerColor = Provider.of<ColorViewModel>(context);
 
     return AppBar(
-      backgroundColor: providerColor.appbarColor,
+      backgroundColor: providerColor.isGradient ? providerColor.appbarColor : null,
       centerTitle: true,
       title: Text(
         text ?? "",

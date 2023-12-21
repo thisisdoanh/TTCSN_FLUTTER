@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traffic/models/project_detail.dart';
 import 'package:traffic/resources/strings.dart';
 import 'package:traffic/resources/widgets/appbar.dart';
 import 'package:traffic/view_models/project_detail.dart';
@@ -9,11 +10,22 @@ import '../resources/widgets/detail_project.dart';
 import '../view_models/color_view_model.dart';
 import '../view_models/textstyle_view_model.dart';
 
-class ProjectItemScreen extends StatelessWidget {
+class ProjectItemScreen extends StatefulWidget {
   const ProjectItemScreen({super.key});
 
+
+
+  @override
+  State<ProjectItemScreen> createState() => _ProjectItemScreenState();
+}
+
+class _ProjectItemScreenState extends State<ProjectItemScreen> {
   @override
   Widget build(BuildContext context) {
+    final ProjectDetail projectDetail = ModalRoute.of(context)?.settings.arguments as ProjectDetail;
+
+    
+
     final providerColor = Provider.of<ColorViewModel>(context);
     final providerTextStyle = Provider.of<TextStyleViewModel>(context);
     final providerDetailProject = Provider.of<DetailProjectViewModel>(context);
@@ -25,7 +37,7 @@ class ProjectItemScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         height: ScreenSize.height,
         width: ScreenSize.width,
-        decoration: providerColor.gradientColorBackground,
+        decoration: providerColor.isGradient ? providerColor.gradientColorBackground : null,
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -46,7 +58,7 @@ class ProjectItemScreen extends StatelessWidget {
                 CustomDetail2Column(
                   providerTextStyle: providerTextStyle,
                   title: textProjectItemId,
-                  data: providerDetailProject.projectDetail.id.toString(),
+                  data: projectDetail!.id.toString() ?? "",
                 ),
                 const SizedBox(
                   height: sizedBoxMedium,
@@ -54,7 +66,7 @@ class ProjectItemScreen extends StatelessWidget {
                 CustomDetail2Column(
                   providerTextStyle: providerTextStyle,
                   title: textProjectItemName,
-                  data: providerDetailProject.projectDetail.name,
+                  data: projectDetail!.name,
                 ),
                 const SizedBox(
                   height: sizedBoxMedium,
@@ -62,7 +74,7 @@ class ProjectItemScreen extends StatelessWidget {
                 CustomDetail2Column(
                   providerTextStyle: providerTextStyle,
                   title: textProjectStartDay,
-                  data: providerDetailProject.projectDetail.startday.toString(),
+                  data: projectDetail!.startday.toString(),
                 ),
                 const SizedBox(
                   height: sizedBoxMedium,
@@ -70,7 +82,7 @@ class ProjectItemScreen extends StatelessWidget {
                 CustomDetail2Column(
                   providerTextStyle: providerTextStyle,
                   title: textProjectEndDay,
-                  data: providerDetailProject.projectDetail.deadline.toString(),
+                  data: projectDetail!.deadline.toString(),
                 ),
                 const SizedBox(
                   height: sizedBoxMedium,
@@ -78,7 +90,7 @@ class ProjectItemScreen extends StatelessWidget {
                 CustomDetail2Column(
                   providerTextStyle: providerTextStyle,
                   title: textProjectBudget,
-                  data: providerDetailProject.projectDetail.budget.toString(),
+                  data: projectDetail!.budget.toString(),
                 ),
                 const SizedBox(
                   height: sizedBoxMedium,
@@ -86,7 +98,7 @@ class ProjectItemScreen extends StatelessWidget {
                 CustomDetail2Column(
                   providerTextStyle: providerTextStyle,
                   title: textProjectLocation,
-                  data: providerDetailProject.projectDetail.id.toString(),
+                  data: projectDetail!.id.toString(),
                 ),
                 const SizedBox(
                   height: sizedBoxMedium,
@@ -94,7 +106,7 @@ class ProjectItemScreen extends StatelessWidget {
                 CustomDetail2Column(
                   providerTextStyle: providerTextStyle,
                   title: textProjectLabor,
-                  data: providerDetailProject.projectDetail.budget.toString(),
+                  data: projectDetail!.budget.toString(),
                 ),
                 const SizedBox(
                   height: sizedBoxMedium,
@@ -102,7 +114,7 @@ class ProjectItemScreen extends StatelessWidget {
                 CustomDetail2Column(
                   providerTextStyle: providerTextStyle,
                   title: textProjectMaterial,
-                  data: providerDetailProject.projectDetail.material,
+                  data: projectDetail!.material,
                 ),
                 const SizedBox(
                   height: sizedBoxMedium,
@@ -110,7 +122,7 @@ class ProjectItemScreen extends StatelessWidget {
                 CustomDetail2Column(
                   providerTextStyle: providerTextStyle,
                   title: textProjectDescription,
-                  data: providerDetailProject.projectDetail.description,
+                  data: projectDetail!.description,
                 ),
               ],
             ),

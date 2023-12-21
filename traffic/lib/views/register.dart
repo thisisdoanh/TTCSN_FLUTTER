@@ -11,6 +11,7 @@ import 'package:traffic/view_models/textstyle_view_model.dart';
 import '../resources/colors.dart';
 import '../resources/dimens.dart';
 import '../resources/strings.dart';
+import '../resources/widgets/aleart_dialog.dart';
 import '../resources/widgets/button.dart';
 import '../view_models/color_view_model.dart';
 
@@ -28,7 +29,7 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final providerColor = Provider.of<ColorViewModel>(context);
-    final providerPass = Provider.of<RegisterViewModel>(context);
+    final providerRegister = Provider.of<RegisterViewModel>(context);
     final providerTextStyle = Provider.of<TextStyleViewModel>(context);
 
     return Form(
@@ -44,7 +45,7 @@ class RegisterScreen extends StatelessWidget {
         body: Container(
           height: ScreenSize.height,
           width: ScreenSize.width,
-          decoration: providerColor.gradientColorBackground,
+          decoration: providerColor.isGradient ? providerColor.gradientColorBackground : null,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,25 +157,19 @@ class RegisterScreen extends StatelessWidget {
                           if (value.isEmpty) {
                             return 'Vui lòng nhập mật khẩu';
                           }
-                          if (value.length < 8) {
-                            return 'Mật khẩu phải có ít nhất 8 ký tự';
-                          }
-
-                          // Kiểm tra chứa chữ hoa và số
-                          if (!RegExp(r'^(?=.*[A-Z])(?=.*[0-9])')
-                              .hasMatch(value)) {
-                            return 'Mật khẩu phải chứa ít nhất một chữ hoa và một số';
+                          if (value.length < 5) {
+                            return 'Mật khẩu phải có ít nhất 5 ký tự';
                           }
                           return null;
                         },
                         controller: controllerPass,
                         textInputType: TextInputType.text,
-                        isHide: providerPass.isShowPass,
+                        isHide: providerRegister.isShowPass,
                         textStyle: providerTextStyle.textStyleText(),
                         textInputAction: TextInputAction.next,
                         functionSuffixIcon: () =>
-                            providerPass.changeIconShowPass(),
-                        suffixIcon: providerPass.urlIcon,
+                            providerRegister.changeIconShowPass(),
+                        suffixIcon: providerRegister.urlIcon,
                       ),
                       const SizedBox(
                         height: sizedBoxMedium,
@@ -199,12 +194,12 @@ class RegisterScreen extends StatelessWidget {
                         },
                         controller: controllerRepeatPass,
                         textInputType: TextInputType.text,
-                        isHide: providerPass.isShowPass,
+                        isHide: providerRegister.isShowPass,
                         textStyle: providerTextStyle.textStyleText(),
                         textInputAction: TextInputAction.done,
                         functionSuffixIcon: () =>
-                            providerPass.changeIconShowPass(),
-                        suffixIcon: providerPass.urlIcon,
+                            providerRegister.changeIconShowPass(),
+                        suffixIcon: providerRegister.urlIcon,
                       ),
                       const SizedBox(
                         height: sizedBoxMedium,
@@ -212,8 +207,21 @@ class RegisterScreen extends StatelessWidget {
                       Center(
                         child: CustomButton(
                           text: textRegister,
-                          function: () {
+                          function: () async {
                             if (formKey.currentState!.validate()) {
+                              await providerRegister.createUser(
+                                controllerName.text,
+                                controllerUsername.text,
+                                controllerEmail.text,
+                                controllerPass.text, context,
+                              );
+
+                              if (providerRegister.message != "") {
+                                CustomDialog().showErrorDialog(
+                                    context, providerRegister.message);
+                              } else {
+                                Navigator.pushNamed(context, routeLogin);
+                              }
                               Navigator.pushNamed(context, routeLogin);
                             }
                           },

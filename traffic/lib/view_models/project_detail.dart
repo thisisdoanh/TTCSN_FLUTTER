@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:traffic/data_sources/api_services.dart';
 
 import '../models/project_detail.dart';
 
@@ -12,20 +13,9 @@ class DetailProjectViewModel with ChangeNotifier {
         "Việc sử dụng ảnh nền giúp trang web trông sinh động và bắt mắt hơn. Để chèn ảnh nền vào một thành phần trên trang web, chúng ta sử dụng thuộc tính background-image. Bây giờ chúng ta sẽ cùng làm một ví dụ minh họa để xem thuộc tính backgroundimage sẽ hoạt động ra sao. Đầu tiên hãy tìm một tấm ảnh mà bạn thích, ở đây tôi sẽ lấy tấm ảnh logo của Khoa Công nghệ thông tin Trường Đại học Công nghiệp Hà Nội. Sau đó, chúng ta sẽ viết CSS để đặt logo này làm ảnh nền trang web như sau:",
     startday: DateTime.parse("2003-18-10"),
     deadline: DateTime.parse("2003-18-10"),
-    projects: [
-      "Hạng mục 1",
-      "Hạng mục 2",
-      "Hạng mục 3",
-      "Hạng mục 4",
-      "Hạng mục 1",
-      "Hạng mục 2",
-      "Hạng mục 3",
-      "Hạng mục 4",
-      "Hạng mục 1",
-      "Hạng mục 2",
-      "Hạng mục 3",
-      "Hạng mục 4"
-    ],
+    projects: [],
+    people: [],
+    status: 'done',
   );
 
   bool _isShowProjectItem = false;
@@ -53,6 +43,21 @@ class DetailProjectViewModel with ChangeNotifier {
 
   void changeShowProjectItem() {
     _isShowProjectItem = !_isShowProjectItem;
+    notifyListeners();
+  }
+
+  Future<void> addProject(
+    String name,
+    String material,
+    String description,
+    String startday,
+    String deadline,
+    String status,
+    int budget,
+    BuildContext context,
+  ) async {
+    await ApiServices(context).createProject(
+        name, material, description, startday, deadline, status, budget);
     notifyListeners();
   }
 }

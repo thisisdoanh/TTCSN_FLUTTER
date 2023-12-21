@@ -21,7 +21,7 @@ class WelcomeScreen extends StatelessWidget {
       body: Container(
         height: ScreenSize.height,
         width: ScreenSize.width,
-        decoration: providerColor.gradientColorBackground,
+        decoration: providerColor.isGradient ? providerColor.gradientColorBackground : null,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

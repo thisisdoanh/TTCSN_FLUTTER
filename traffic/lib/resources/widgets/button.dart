@@ -15,6 +15,7 @@ class CustomButton extends StatelessWidget {
     this.iconLeading,
     this.iconSuffix,
     this.colorIcon,
+    
   });
 
   final String text;

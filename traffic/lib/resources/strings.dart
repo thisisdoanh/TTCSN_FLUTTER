@@ -46,6 +46,9 @@ const String textLogOut = "Đăng xuất";
 
 const String assetImgLogo = "assets/images/img_logo.png";
 const String assetImgReturn = "assets/images/img_return.png";
+const String assetImgEdit = "assets/images/img_edit.png";
+const String assetImgDelete = "assets/images/img_delete.png";
+const String assetImgUser = "assets/images/user.png";
 
 const String assetIconReturn = "assets/icons/icon_return.svg";
 const String assetIconShowPass = "assets/icons/icon_show_pass.svg";

@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-
+import 'package:traffic/models/user.dart';
 
 part 'project_detail.g.dart';
 
@@ -12,7 +12,9 @@ class ProjectDetail {
   String description;
   DateTime startday;
   DateTime deadline;
-  List<String> projects;
+  String? status;
+  List<User?>? people;
+  List<ProjectDetail?>? projects;
 
   ProjectDetail({
     required this.id,
@@ -23,6 +25,8 @@ class ProjectDetail {
     required this.startday,
     required this.deadline,
     required this.projects,
+    required this.people,
+    required this.status,
   });
   factory ProjectDetail.fromJson(Map<String, dynamic> json) =>
       _$ProjectDetailFromJson(json);

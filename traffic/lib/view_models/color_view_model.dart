@@ -1,7 +1,23 @@
+
 import 'package:flutter/material.dart';
 import 'package:traffic/resources/colors.dart';
 
 class ColorViewModel with ChangeNotifier {
+
+  bool isDarkMode = false;
+  bool isGradient = true;
+
+  void change(){
+    if (!isDarkMode || isGradient){
+      colorText = colorTextBlack;
+    } else {
+      colorText = colorTextWhite;
+    }
+    notifyListeners();
+  }
+
+
+
   List<BoxDecoration> listGradientColorBackground = [
     const BoxDecoration(
       gradient: LinearGradient(colors: [

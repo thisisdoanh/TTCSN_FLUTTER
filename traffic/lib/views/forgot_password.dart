@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:traffic/data_sources/api_services.dart';
 import 'package:traffic/resources/colors.dart';
 import 'package:traffic/resources/dimens.dart';
 import 'package:traffic/resources/strings.dart';
@@ -9,6 +12,8 @@ import 'package:traffic/resources/widgets/button.dart';
 import 'package:traffic/resources/widgets/text_form_field.dart';
 import 'package:traffic/view_models/color_view_model.dart';
 import 'package:traffic/view_models/textstyle_view_model.dart';
+
+import '../resources/utils/loading.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   ForgotPasswordScreen({super.key});
@@ -24,7 +29,7 @@ class ForgotPasswordScreen extends StatelessWidget {
       body: Container(
         width: ScreenSize.width,
         height: ScreenSize.height,
-        decoration: providerColor.gradientColorBackground,
+        decoration: providerColor.isGradient ? providerColor.gradientColorBackground : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -77,7 +82,27 @@ class ForgotPasswordScreen extends StatelessWidget {
                   Center(
                     child: CustomButton(
                       text: textGetPassword,
-                      function: () {},
+                      function: () async {
+                        OverlayState overlayState = Overlay.of(context);
+                        List<OverlayEntry> entries =
+                        createOverlayLoading(context);
+                        for (var element in entries) {
+                          overlayState.insert(element);
+                        }
+
+                        await ApiServices(context).forgotPass(controllerEmail.text);
+
+                        for (var element in entries) {
+                          element.remove();
+                        }
+                        
+                        showDialog(context: context, builder: (context) => const AlertDialog(
+                          title: Text("The password reset link has been sent to your email. Please verify"),
+                        ),);
+
+                        Future.delayed(const Duration(seconds: 3), () => Navigator.pop(context),);
+
+                      },
                       height: heightButton,
                       width: widthButtonLogin + 50,
                       textStyle: providerTextStyle.textStyleTextBold(),

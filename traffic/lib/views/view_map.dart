@@ -6,6 +6,7 @@ import '../resources/dimens.dart';
 import '../resources/widgets/appbar.dart';
 import '../view_models/color_view_model.dart';
 import '../view_models/map_view_model.dart';
+import '../models/google_map_location.dart' as locations;
 
 class ViewMapScreen extends StatefulWidget {
   const ViewMapScreen({super.key});
@@ -28,14 +29,30 @@ class _ViewMapScreenState extends State<ViewMapScreen> {
   //   });
   // }
 
-  void _onMapCreated(GoogleMapController controller) {
+  final Map<String, Marker> _markers = {};
+  Future<void> _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
+    final googleOffices = await locations.getGoogleOffices();
+    setState(() {
+      _markers.clear();
+      for (final office in googleOffices.offices) {
+        final marker = Marker(
+          markerId: MarkerId(office.name),
+          position: LatLng(office.lat, office.lng),
+          infoWindow: InfoWindow(
+            title: office.name,
+            snippet: office.address,
+          ),
+        );
+        _markers[office.name] = marker;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final providerColor = Provider.of<ColorViewModel>(context);
-    final providerMap = Provider.of<MapViewModel>(context);
+    final providerMap = Provider.of<MapViewModel>(context, listen: false);
 
     return Scaffold(
       appBar: CustomAppbar(
@@ -46,7 +63,7 @@ class _ViewMapScreenState extends State<ViewMapScreen> {
       body: Container(
         height: ScreenSize.height,
         width: ScreenSize.width,
-        decoration: providerColor.gradientColorBackground,
+        decoration: providerColor.isGradient ? providerColor.gradientColorBackground : null,
         child: Padding(
           padding: const EdgeInsets.all(0),
           child: GoogleMap(
@@ -61,6 +78,7 @@ class _ViewMapScreenState extends State<ViewMapScreen> {
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
             indoorViewEnabled: true,
+            markers: _markers.values.toSet(),
           ),
         ),
       ),

@@ -15,6 +15,18 @@ class TextStyleViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  bool isDarkMode = false;
+  bool isGradient = true;
+
+  void change(){
+    if (!isDarkMode || isGradient){
+      _textColor = colorTextBlack;
+    } else {
+      _textColor = colorTextWhite;
+    }
+    notifyListeners();
+  }
+
   static TextStyleViewModel of(BuildContext context) {
     return Provider.of<TextStyleViewModel>(context, listen: false);
   }
