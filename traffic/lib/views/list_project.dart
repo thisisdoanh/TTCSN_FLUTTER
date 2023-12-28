@@ -12,6 +12,7 @@ import 'package:traffic/view_models/add_project_view_model.dart';
 import 'package:traffic/view_models/color_view_model.dart';
 import 'package:traffic/view_models/controller.dart';
 import 'package:traffic/view_models/textstyle_view_model.dart';
+import 'package:traffic/views/edit_project.dart';
 
 import '../resources/routes_screens.dart';
 import '../resources/utils/loading.dart';
@@ -110,6 +111,8 @@ class _ListProjectScreenState extends State<ListProjectScreen> {
                           ),
                           child: GestureDetector(
                             onTap: () async {
+                              await ApiServices(context).fetchLocationById(providerController
+                                  .projectDetailUser![index]!.id.toString());
                               await ApiServices(context).fetchProjectDetailID(
                                   providerController
                                       .projectDetailUser![index]!.id);
@@ -135,8 +138,13 @@ class _ListProjectScreenState extends State<ListProjectScreen> {
                                   ),
                                 )),
                                 GestureDetector(
-                                  onTap: () {
-
+                                  onTap: ()async{
+                                    await ApiServices(context).fetchLocationById(providerController
+                                        .projectDetailUser![index]!.id.toString());
+                                    await ApiServices(context).fetchProjectDetailID(
+                                        providerController
+                                            .projectDetailUser![index]!.id);
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => EditProject(),));
                                   },
                                   child: Container(
                                     height: 40,

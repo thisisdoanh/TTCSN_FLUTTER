@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traffic/models/project_detail.dart';
 import 'package:traffic/resources/colors.dart';
 import 'package:traffic/resources/routes_screens.dart';
 import 'package:traffic/resources/strings.dart';
@@ -32,7 +33,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
       setState(() {});
     });
 
-    print(isFetchId);
+    print("ID:" +isFetchId.toString());
 
     super.initState();
   }
@@ -91,7 +92,8 @@ class _ProjectScreenState extends State<ProjectScreen> {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectName,
-                          data: providerDetailProject.projectDetail.name,
+                          data: providerController.projectDetailID!.name
+                              .toString(),
                         ),
                         const SizedBox(
                           height: sizedBoxMedium,
@@ -135,11 +137,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
                         CustomDetail2Column(
                           providerTextStyle: providerTextStyle,
                           title: textProjectLocation,
-                          data: isFetchId == 1
-                              ? providerController.projectDetailID!.id
-                                  .toString()
-                              : providerDetailProject.projectDetail.id
-                                  .toString(),
+                          data: providerController.location!.offices.address,
                         ),
                         const SizedBox(
                           height: sizedBoxMedium,

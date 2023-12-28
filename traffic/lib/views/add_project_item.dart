@@ -2,6 +2,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:traffic/models/project_detail.dart';
@@ -57,6 +59,13 @@ class _AddNewProjectItemState extends State<AddNewProjectItem> {
     final providerColor = Provider.of<ColorViewModel>(context);
     final providerTextStyle = Provider.of<TextStyleViewModel>(context);
     final providerDetailProject = Provider.of<AddProjectViewModel>(context);
+
+    String region = "";
+    String address = "";
+    String name = "";
+    String phone = "";
+    double lat = 0;
+    double lng = 0;
 
     return Scaffold(
       appBar:
@@ -187,18 +196,72 @@ class _AddNewProjectItemState extends State<AddNewProjectItem> {
                           const SizedBox(
                             height: sizedBoxMedium,
                           ),
-                          Custom2ColumnTFF(
-                            providerTextStyle: providerTextStyle,
-                            controller: controllerLocation,
-                            text: textProjectLocation,
-                            validator: (value) {
-                              if (value.toString().trim() == "") {
-                                return "Không được để trống";
-                              }
-                              return null;
+                          Text(
+                            textAddress,
+                            style: providerTextStyle
+                                .textStyleTextBoldTitleDetailProject(),
+                          ),
+                          const SizedBox(
+                            height: sizedBoxMedium,
+                          ),
+                          GooglePlaceAutoCompleteTextField(
+                            boxDecoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                    borderRadiusButtonLarge),
+                                border: Border.all(
+                                  width: 1,
+                                  color: Colors.black,
+                                )),
+                            textEditingController: controllerLocation,
+                            googleAPIKey:
+                            "AIzaSyA8NhowPUdltptw8iZXmp47E0i-FCPwvrE",
+                            inputDecoration: const InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(vertical: 0),
+                              fillColor: Colors.white,
+                              filled: true,
+                            ),
+                            debounceTime: 400,
+                            isLatLngRequired: true,
+                            getPlaceDetailWithLatLng: (Prediction prediction) {
+                              print("placeDetails" + prediction.lat.toString());
+                              print("placeDetails" + prediction.lng.toString());
+                              lat = double.parse(prediction?.lat ?? "0");
+                              lng = double.parse(prediction?.lng ?? "0");
+                              address = prediction?.description ?? "";
+                              region = prediction
+                                  .terms![prediction.terms!.length - 1]
+                                  .value ??
+                                  "";
                             },
-                            textInputAction: TextInputAction.next,
-                            textInputType: TextInputType.name,
+                            itemClick: (Prediction prediction) {
+                              controllerLocation.text =
+                                  prediction.description ?? "";
+                              controllerLocation.selection =
+                                  TextSelection.fromPosition(
+                                    TextPosition(
+                                        offset:
+                                        prediction.description?.length ?? 0),
+                                  );
+                            },
+                            seperatedBuilder: const Divider(),
+                            itemBuilder:
+                                (context, index, Prediction prediction) {
+                              return Container(
+                                padding: const EdgeInsets.all(10),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.location_on),
+                                    const SizedBox(
+                                      width: 7,
+                                    ),
+                                    Expanded(
+                                        child:
+                                        Text(prediction.description ?? ""))
+                                  ],
+                                ),
+                              );
+                            },
+                            isCrossBtnShown: true,
                           ),
                           const SizedBox(
                             height: sizedBoxMedium,
@@ -284,6 +347,16 @@ class _AddNewProjectItemState extends State<AddNewProjectItem> {
                           for (var element in entries) {
                             overlayState.insert(element);
                           }
+
+                          String message = await ApiServices(context)
+                              .createLocation(
+                              address,
+                              "",
+                              lat,
+                              lng,
+                              "Dự án: ${controllerName.text}",
+                              phone,
+                              region);
 
                           ProjectDetail projectDetail = await ApiServices(context).createProjectItem(
                               controllerName.text,

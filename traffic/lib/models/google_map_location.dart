@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 import 'package:json_annotation/json_annotation.dart';
+import 'package:traffic/data_sources/api_urls.dart';
 
 part 'google_map_location.g.dart';
 
@@ -56,7 +57,7 @@ class Office {
   Map<String, dynamic> toJson() => _$OfficeToJson(this);
 
   final String address;
-  final String id;
+  final int id;
   final String image;
   final double lat;
   final double lng;
@@ -69,7 +70,6 @@ class Office {
 class Locations {
   Locations({
     required this.offices,
-    required this.regions,
   });
 
   factory Locations.fromJson(Map<String, dynamic> json) =>
@@ -77,18 +77,17 @@ class Locations {
   Map<String, dynamic> toJson() => _$LocationsToJson(this);
 
   final List<Office> offices;
-  final List<Region> regions;
 }
 
 Future<Locations> getGoogleOffices() async {
-  const googleLocationsURL = 'https://about.google/static/data/locations.json';
+  const googleLocationsURL = ApiUrls.baseUri + ApiUrls.uriLocation;
 
   // Retrieve the locations of Google offices
   try {
     final response = await http.get(Uri.parse(googleLocationsURL));
+    final String jsonBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
-      return Locations.fromJson(
-          json.decode(response.body) as Map<String, dynamic>);
+      return Locations.fromJson(json.decode(jsonBody) as Map<String, dynamic>);
     }
   } catch (e) {
     if (kDebugMode) {

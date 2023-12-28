@@ -57,7 +57,18 @@ class SettingScreen extends StatelessWidget {
                   children: [
                     CustomButton(
                       text: textUserInfo,
-                      function: () {
+                      function: () async {
+                        OverlayState overlayState = Overlay.of(context);
+                        List<OverlayEntry> entries =
+                            createOverlayLoading(context);
+                        for (var element in entries) {
+                          overlayState.insert(element);
+                        }
+                        await ApiServices(context).fetchUserByID();
+
+                        for (var element in entries) {
+                          element.remove();
+                        }
                         Navigator.pushNamed(context, routeUserInfor);
                       },
                       height: heightButton,
@@ -122,7 +133,7 @@ class SettingScreen extends StatelessWidget {
                                       child: CustomButton(
                                         text: "Đổi mật khẩu",
                                         function: () async {
-                                          controllerChangePass.text = "";
+
                                           OverlayState overlayState =
                                               Overlay.of(context);
                                           List<OverlayEntry> entries =
@@ -154,6 +165,7 @@ class SettingScreen extends StatelessWidget {
                                               Navigator.pop(context);
                                             },
                                           );
+                                          controllerChangePass.text = "";
                                         },
                                         height: heightButton,
                                         width: widthButtonLogin + 50,

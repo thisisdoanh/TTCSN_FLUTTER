@@ -79,12 +79,22 @@ class _HomePageScreenState extends State<HomePageScreen> {
               CustomButton(
                 text: textTextMapHomePage,
                 function: () async {
+                  OverlayState overlayState = Overlay.of(context);
+                  List<OverlayEntry> entries =
+                  createOverlayLoading(context);
+                  for (var element in entries) {
+                    overlayState.insert(element);
+                  }
                   Position position = await _getCurrentLocation();
 
                   providerMap.lat = "${position.latitude}";
                   providerMap.long = "${position.longitude}";
 
                   _liveLocation();
+
+                  for (var element in entries) {
+                    element.remove();
+                  }
 
                   Navigator.pushNamed(context, routeViewMapPage);
                 },
@@ -97,7 +107,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 iconSuffix: Icons.arrow_forward_ios,
                 colorIcon: providerTextStyle.textColor,
               ),
-              DataUser().role == "user"
+              context.watch<Controller>().token!.authorities[0]["authority"]!.toLowerCase().contains("user")
                   ? Column(
                       children: [
                         const SizedBox(
@@ -175,7 +185,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         ),
                       ],
                     ),
-              DataUser().role != "user"
+              context.watch<Controller>().token!.authorities[0]["authority"]!.toLowerCase().contains("admin")
                   ? Column(
                       children: [
                         const SizedBox(
@@ -233,8 +243,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
     Geolocator.getPositionStream(
       locationSettings: locationSettings,
     ).listen((Position position) {
-      Provider.of<MapViewModel>(context).lat = position.latitude.toString();
-      Provider.of<MapViewModel>(context).long = position.longitude.toString();
+      Provider.of<MapViewModel>(context, listen: false).lat = position.latitude.toString();
+      Provider.of<MapViewModel>(context, listen: false).long = position.longitude.toString();
     });
   }
 }

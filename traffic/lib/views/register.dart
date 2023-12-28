@@ -68,7 +68,7 @@ class RegisterScreen extends StatelessWidget {
                       CustomTextFormField(
                         width: ScreenSize.width * 0.9,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value.trim().isEmpty) {
                             return 'Vui lòng nhập họ và tên';
                           }
                           // Kiểm tra xem họ và tên có chứa ký tự đặc biệt hay không
@@ -97,7 +97,7 @@ class RegisterScreen extends StatelessWidget {
                       CustomTextFormField(
                         width: ScreenSize.width * 0.9,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value.trim().isEmpty) {
                             return 'Vui lòng nhập tên đăng nhập';
                           }
                           if (value.length < 6) {
@@ -124,7 +124,7 @@ class RegisterScreen extends StatelessWidget {
                       CustomTextFormField(
                         width: ScreenSize.width * 0.9,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value.trim().isEmpty) {
                             return 'Vui lòng nhập địa chỉ email';
                           }
                           // Kiểm tra xem địa chỉ email có đúng định dạng hay không
@@ -154,7 +154,7 @@ class RegisterScreen extends StatelessWidget {
                       CustomTextFormField(
                         width: ScreenSize.width * 0.9,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value.trim().isEmpty) {
                             return 'Vui lòng nhập mật khẩu';
                           }
                           if (value.length < 5) {
@@ -184,7 +184,7 @@ class RegisterScreen extends StatelessWidget {
                       CustomTextFormField(
                         width: ScreenSize.width * 0.9,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value.trim().isEmpty) {
                             return 'Vui lòng nhập lại mật khẩu';
                           }
                           if (value != controllerPass.text) {

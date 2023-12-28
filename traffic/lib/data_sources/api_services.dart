@@ -13,6 +13,9 @@ import 'package:traffic/resources/widgets/aleart_dialog.dart';
 import 'package:traffic/view_models/add_project_view_model.dart';
 import 'package:traffic/view_models/controller.dart';
 
+import '../models/google_map_location.dart';
+import '../models/location.dart';
+
 class ApiServices {
   late BuildContext context;
   ApiServices(this.context);
@@ -28,7 +31,7 @@ class ApiServices {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       ).timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -54,6 +57,70 @@ class ApiServices {
     }
   }
 
+  Future<dynamic> fetchLocationById(String id) async {
+    var api = ApiUrls.baseUri + ApiUrls.uriLocation + id;
+
+    try {
+      var response = await http.get(
+        Uri.parse(api),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      ).timeout(Duration(seconds: timeOutDuration));
+      final String jsonBody = utf8.decode(response.bodyBytes);
+      final int statusCode = response.statusCode;
+
+      if (statusCode != 200 || jsonBody == null) {
+        print(response.reasonPhrase);
+        String dataContainer = json.decode(jsonBody)["message"];
+        print(dataContainer);
+        return dataContainer;
+      }
+
+      Location locations = Location.fromJson(json.decode(jsonBody));
+      Provider.of<Controller>(context, listen: false).location = locations;
+      return "";
+    } on TimeoutException {
+      return "Time out";
+    } catch (e) {
+      print(e.toString());
+      return e.toString();
+    }
+  }
+
+  Future<dynamic> fetchAllUser() async{
+    var api = "${ApiUrls.baseUri}${ApiUrls.uriUser}all-users";
+
+    try {
+      var response = await http.get(
+        Uri.parse(api),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      ).timeout(Duration(seconds: timeOutDuration));
+      final String jsonBody = utf8.decode(response.bodyBytes);
+      final int statusCode = response.statusCode;
+
+      if (statusCode != 200 || jsonBody == null) {
+        print(response.reasonPhrase);
+        String dataContainer = json.decode(jsonBody)["message"];
+        print(dataContainer);
+        return dataContainer;
+      }
+
+      List dataContainer = json.decode(jsonBody)["body"]["data"];
+
+      List<User> listUser = dataContainer.map((e) => User.fromJson(e)).toList();
+
+      return listUser;
+    } on TimeoutException {
+      return "Time out";
+    } catch (e) {
+      print(e.toString());
+      return e.toString();
+    }
+  }
+
   Future<dynamic> fetchProjectDetailID(int id) async {
     var api = ApiUrls.baseUri + ApiUrls.uriProject + id.toString();
 
@@ -64,7 +131,7 @@ class ApiServices {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       ).timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -102,7 +169,50 @@ class ApiServices {
               "${Provider.of<Controller>(context, listen: false).token!.tokenType} ${Provider.of<Controller>(context, listen: false).token!.accessToken}"
         },
       ).timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
+      final int statusCode = response.statusCode;
+
+      if (statusCode != 200 || jsonBody == null) {
+        print(response.reasonPhrase);
+        String dataContainer = json.decode(jsonBody)["message"];
+        print(dataContainer);
+        return dataContainer;
+      }
+
+      Map<String, dynamic> dataContainer =
+          json.decode(jsonBody)["body"]["data"];
+
+      Provider.of<Controller>(context, listen: false).user =
+          User.fromJson(dataContainer);
+
+      print("Hello ");
+      print(Provider.of<Controller>(context, listen: false).user);
+      return "";
+    } on TimeoutException {
+      return "Time out";
+    } catch (e) {
+      print(e.toString());
+      return e.toString();
+    }
+  }
+
+  Future<dynamic> fetchUserByID() async {
+    var api = ApiUrls.baseUri +
+            ApiUrls.uriUser +
+            Provider.of<Controller>(context, listen: false)
+                .user!
+                .id
+                .toString() ??
+        "0";
+
+    try {
+      var response = await http.get(
+        Uri.parse(api),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      ).timeout(Duration(seconds: timeOutDuration));
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -144,7 +254,7 @@ class ApiServices {
             ),
           )
           .timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -199,7 +309,7 @@ class ApiServices {
             ),
           )
           .timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -210,6 +320,91 @@ class ApiServices {
       }
 
       return "";
+    } on TimeoutException {
+      return "Time out";
+    } catch (e) {
+      print(e.toString());
+      return e.toString();
+    }
+  }
+
+  Future<String> addUserToProject(
+    String projectId, String userID
+  ) async {
+    var api = "${ApiUrls.baseUri}${ApiUrls.uriProject}$projectId/$userID";
+
+    try {
+      var response = await http
+          .post(
+            Uri.parse(api),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+          )
+          .timeout(Duration(seconds: timeOutDuration));
+      final String jsonBody = utf8.decode(response.bodyBytes);
+      final int statusCode = response.statusCode;
+
+      if (statusCode != 200 || jsonBody == null) {
+        print(response.reasonPhrase);
+        String dataContainer = json.decode(jsonBody)["message"];
+        print(dataContainer);
+        return dataContainer;
+      }
+
+      String dataContainer = json.decode(jsonBody)["body"]['status'];
+
+      return dataContainer;
+    } on TimeoutException {
+      return "Time out";
+    } catch (e) {
+      print(e.toString());
+      return e.toString();
+    }
+  }
+
+  Future<String> updateUser(
+    String name,
+    String age,
+    String address,
+    String gender,
+    String phoneNum,
+  ) async {
+    var api = ApiUrls.baseUri + ApiUrls.uriUser;
+
+    try {
+      var response = await http
+          .put(
+            Uri.parse(api),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization':
+                  "${Provider.of<Controller>(context, listen: false).token!.tokenType} ${Provider.of<Controller>(context, listen: false).token!.accessToken}"
+            },
+            body: json.encode(
+              {
+                "name": name,
+                "email":
+                    Provider.of<Controller>(context, listen: false).user!.email,
+                "gender": gender,
+                "age": int.parse(age),
+                "address": address,
+                "phone": phoneNum
+              },
+            ),
+          )
+          .timeout(Duration(seconds: timeOutDuration));
+      final String jsonBody = utf8.decode(response.bodyBytes);
+      final int statusCode = response.statusCode;
+
+      if (statusCode != 200 || jsonBody == null) {
+        print(response.reasonPhrase);
+        String dataContainer = json.decode(jsonBody)["message"];
+        print(dataContainer);
+        return dataContainer;
+      }
+
+      return "Success";
     } on TimeoutException {
       return "Time out";
     } catch (e) {
@@ -248,7 +443,7 @@ class ApiServices {
             ),
           )
           .timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -260,11 +455,65 @@ class ApiServices {
 
       String status = json.decode(jsonBody)["body"]["status"];
       Map<String, dynamic> dataContainer =
-      json.decode(jsonBody)["body"]["data"];
+          json.decode(jsonBody)["body"]["data"];
 
       ProjectDetail projectDetail = ProjectDetail.fromJson(dataContainer);
 
-      Provider.of<AddProjectViewModel>(context, listen: false).id = projectDetail.id.toString() ?? "0";
+      Provider.of<AddProjectViewModel>(context, listen: false).id =
+          projectDetail.id.toString() ?? "0";
+
+      return status;
+    } on TimeoutException {
+      return "Time out";
+    } catch (e) {
+      print(e.toString());
+      return e.toString();
+    }
+  }
+
+  Future<String> createLocation(
+    String address,
+    String image,
+    double lat,
+    double lng,
+    String name,
+    String phone,
+    String region,
+  ) async {
+    var api = ApiUrls.baseUri + ApiUrls.uriLocation;
+    try {
+      var response = await http
+          .post(
+            Uri.parse(api),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: json.encode(
+              {
+                "address": address,
+                "image": image ?? "",
+                "lat": lat,
+                "lng": lng,
+                "name": name,
+                "phone": phone,
+                "region": region
+              },
+            ),
+          )
+          .timeout(Duration(seconds: timeOutDuration));
+      final String jsonBody = utf8.decode(response.bodyBytes);
+      final int statusCode = response.statusCode;
+
+      if (statusCode != 200 || jsonBody == null) {
+        print(response.reasonPhrase);
+        String dataContainer = json.decode(jsonBody)["message"];
+        print(dataContainer);
+        return dataContainer;
+      }
+
+      String status = json.decode(jsonBody)["body"]["status"];
+      // Map<String, dynamic> dataContainer =
+      //     json.decode(jsonBody)["body"]["data"];
 
       return status;
     } on TimeoutException {
@@ -305,7 +554,7 @@ class ApiServices {
             ),
           )
           .timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -352,7 +601,7 @@ class ApiServices {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       ).timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -383,7 +632,7 @@ class ApiServices {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       ).timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -415,7 +664,7 @@ class ApiServices {
               "${Provider.of<Controller>(context, listen: false).token!.tokenType} ${Provider.of<Controller>(context, listen: false).token!.accessToken}"
         },
       ).timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
@@ -444,7 +693,7 @@ class ApiServices {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       ).timeout(Duration(seconds: timeOutDuration));
-      final String jsonBody = response.body;
+      final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {

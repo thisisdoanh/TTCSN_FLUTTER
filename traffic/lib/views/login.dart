@@ -84,7 +84,7 @@ class LoginScreen extends StatelessWidget {
                         CustomTextFormField(
                           width: ScreenSize.width * 0.9,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value.trim().isEmpty) {
                               return 'Vui lòng nhập tên đăng nhập';
                             }
                             if (value.length < 6) {
@@ -111,7 +111,7 @@ class LoginScreen extends StatelessWidget {
                         CustomTextFormField(
                           width: ScreenSize.width * 0.9,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value.trim().isEmpty) {
                               return 'Vui lòng nhập mật khẩu';
                             }
                             if (value.length < 5) {

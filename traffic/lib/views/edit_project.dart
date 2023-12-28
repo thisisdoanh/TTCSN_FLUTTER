@@ -16,6 +16,7 @@ import 'package:traffic/view_models/add_project_view_model.dart';
 import 'package:traffic/view_models/controller.dart';
 import 'package:traffic/views/add_project_item.dart';
 
+import '../models/user.dart';
 import '../resources/colors.dart';
 import '../resources/dimens.dart';
 import '../resources/routes_screens.dart';
@@ -29,24 +30,89 @@ import '../view_models/color_view_model.dart';
 import '../view_models/project_detail.dart';
 import '../view_models/textstyle_view_model.dart';
 
-class AddNewProject extends StatelessWidget {
-  AddNewProject({super.key});
+class EditProject extends StatefulWidget {
+  const EditProject({super.key});
+
+  @override
+  State<EditProject> createState() => _EditProjectState();
+}
+
+class _EditProjectState extends State<EditProject> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   final TextEditingController controllerName = TextEditingController();
+
   final TextEditingController controllerStartdate = TextEditingController();
+
   final TextEditingController controllerDeadline = TextEditingController();
+
   final TextEditingController controllerBudget = TextEditingController();
+
   final TextEditingController controllerLocation = TextEditingController();
+
   final TextEditingController controllerLabor = TextEditingController();
+
   final TextEditingController controllerMaterial = TextEditingController();
+
   final TextEditingController controllerDescription = TextEditingController();
+
   final TextEditingController controllerStatus = TextEditingController();
+
+  @override
+  void initState() {
+    controllerName.text = Provider.of<Controller>(context, listen: false)
+        .projectDetailID!
+        .name
+        .toString();
+    controllerStartdate.text = Provider.of<Controller>(context, listen: false)
+        .projectDetailID!
+        .startday
+        .toString()
+        .substring(0, 10);
+    controllerDeadline.text = Provider.of<Controller>(context, listen: false)
+        .projectDetailID!
+        .deadline
+        .toString()
+        .substring(0, 10);
+    controllerBudget.text = Provider.of<Controller>(context, listen: false)
+        .projectDetailID!
+        .budget
+        .toString();
+    controllerLocation.text = Provider.of<Controller>(context, listen: false)
+        .location!
+        .offices
+        .address;
+    controllerStatus.text = Provider.of<Controller>(context, listen: false)
+        .projectDetailID!
+        .budget
+        .toString();
+    controllerDescription.text = Provider.of<Controller>(context, listen: false)
+        .projectDetailID!
+        .description
+        .toString();
+    controllerMaterial.text = Provider.of<Controller>(context, listen: false)
+        .projectDetailID!
+        .material
+        .toString();
+    controllerLabor.text = Provider.of<Controller>(context, listen: false)
+                .projectDetailID!
+                .people !=
+            null
+        ? Provider.of<Controller>(context, listen: false)
+            .projectDetailID!
+            .people!
+            .length
+            .toString()
+        : "0";
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final providerColor = Provider.of<ColorViewModel>(context);
     final providerTextStyle = Provider.of<TextStyleViewModel>(context);
     final providerDetailProject = Provider.of<AddProjectViewModel>(context);
+    final providerController = Provider.of<Controller>(context);
 
     String region = "";
     String address = "";
@@ -86,7 +152,7 @@ class AddNewProject extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Thêm dự án',
+                            'Sửa dự án',
                             style: providerTextStyle.textStyleTextBoldSmall(),
                           ),
                           const SizedBox(
@@ -255,18 +321,139 @@ class AddNewProject extends StatelessWidget {
                           const SizedBox(
                             height: sizedBoxMedium,
                           ),
-                          Custom2ColumnTFF(
-                            providerTextStyle: providerTextStyle,
-                            controller: controllerLabor,
-                            text: textProjectLabor,
-                            validator: (value) {
-                              if (value.trim().isEmpty) {
-                                return 'Vui lòng nhập nhân công dự án';
-                              }
-                              return null;
-                            },
-                            textInputAction: TextInputAction.next,
-                            textInputType: TextInputType.name,
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Custom2ColumnTFF(
+                                  providerTextStyle: providerTextStyle,
+                                  controller: controllerLabor,
+                                  text: textProjectLabor,
+                                  validator: (value) {
+                                    if (value.trim().isEmpty) {
+                                      return 'Vui lòng nhập nhân công dự án';
+                                    }
+                                    return null;
+                                  },
+                                  textInputAction: TextInputAction.next,
+                                  textInputType: TextInputType.name,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: sizedBoxMedium,
+                              ),
+                              Expanded(
+                                  flex: 1,
+                                  child: CustomButton(
+                                    width: 100,
+                                    color: colorButton,
+                                    borderRadius: borderRadiusButtonLarge,
+                                    height: heightButton,
+                                    text: "Thêm",
+                                    function: () async {
+                                      List<User> listUser =
+                                          await ApiServices(context)
+                                              .fetchAllUser();
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Dialog(
+                                            backgroundColor: Colors.white,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(25),
+                                                border: Border.all(
+                                                  width: 1,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.3,
+                                              child: Column(
+                                                children: [
+                                                  const SizedBox(
+                                                    height: sizedBoxMedium,
+                                                  ),
+                                                  const Text(
+                                                    "Danh sách người dùng",
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 18,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: sizedBoxMedium,
+                                                  ),
+                                                  Expanded(
+                                                      child: ListView.builder(
+                                                    itemCount: listUser.length,
+                                                    itemBuilder:
+                                                        (context, index) =>
+                                                            CupertinoButton(
+                                                      child: Text(
+                                                          listUser[index].name,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize:
+                                                                      18)),
+                                                      onPressed: () async {
+                                                        String message = await ApiServices(
+                                                                context)
+                                                            .addUserToProject(
+                                                                providerController
+                                                                    .projectDetailID!
+                                                                    .id
+                                                                    .toString(),
+                                                                listUser[index]
+                                                                    .id
+                                                                    .toString());
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (context) =>
+                                                              AlertDialog(
+                                                            title:
+                                                                Text(message),
+                                                          ),
+                                                        );
+                                                        Future.delayed(
+                                                          const Duration(
+                                                              seconds: 2),
+                                                          () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                        );
+                                                      },
+                                                    ),
+                                                  ))
+                                                  // Wrap(
+                                                  //   spacing: 15,
+                                                  //   runSpacing: 15,
+                                                  //   children: [
+                                                  //     for (int i = 0;
+                                                  //         i < listUser.length;
+                                                  //         i++)
+                                                  //       ,
+                                                  //   ],
+                                                  // ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    textStyle: providerTextStyle
+                                        .textStyleTextBoldButtonSmall(),
+                                  )),
+                            ],
                           ),
                           const SizedBox(
                             height: sizedBoxMedium,
@@ -319,132 +506,132 @@ class AddNewProject extends StatelessWidget {
                           const SizedBox(
                             height: sizedBoxMedium,
                           ),
-                          CustomButton(
-                            text: textProjectItem,
-                            function: () {
-                              providerDetailProject.changeIconProjectItem();
-                              providerDetailProject.changeShowProjectItem();
-                            },
-                            height: heightButton,
-                            width: ScreenSize.width * 0.9,
-                            textStyle: providerTextStyle.textStyleTextBold(),
-                            borderRadius: borderRadiusButtonLarge,
-                            color: colorButton,
-                            iconSuffix: providerDetailProject.iconProjectItem,
-                            colorIcon: colorTextBlack,
-                          ),
-                          Consumer<AddProjectViewModel>(
-                            builder: (context, providerDetailProject, _) =>
-                                (providerDetailProject.isShowProjectItem)
-                                    ? Container(
-                                        height: 200,
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  "Số lượng: ${providerDetailProject.listPrjItem.length}",
-                                                  style: const TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 15,
-                                                    fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w900,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                                CupertinoButton(
-                                                  child: const Text(
-                                                    "Thêm",
-                                                    style: TextStyle(
-                                                      decoration: TextDecoration
-                                                          .underline,
-                                                      color: Colors.black,
-                                                      fontSize: 15,
-                                                      fontFamily: 'Inter',
-                                                      fontWeight:
-                                                          FontWeight.w900,
-                                                      height: 0,
-                                                    ),
-                                                  ),
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              AddNewProjectItem(),
-                                                        ));
-                                                  },
-                                                )
-                                              ],
-                                            ),
-                                            if (providerDetailProject
-                                                    .listPrjItem.length !=
-                                                0)
-                                              Expanded(
-                                                child: ListView.builder(
-                                                  shrinkWrap: true,
-                                                  itemCount:
-                                                      providerDetailProject
-                                                          .listPrjItem.length,
-                                                  itemBuilder:
-                                                      (context, index) =>
-                                                          Column(
-                                                    children: [
-                                                      const SizedBox(
-                                                        height: sizedBoxSmall,
-                                                      ),
-                                                      CustomButton(
-                                                        text:
-                                                            "Hạng mục ${index + 1}",
-                                                        function: () {
-                                                          Navigator.pushNamed(
-                                                              context,
-                                                              routeViewProjectItemPage);
-                                                        },
-                                                        height:
-                                                            heightButton * 0.8,
-                                                        width:
-                                                            ScreenSize.width *
-                                                                0.7,
-                                                        textStyle: providerTextStyle
-                                                            .textStyleTextBold(),
-                                                        borderRadius:
-                                                            borderRadiusButtonLarge,
-                                                        color: colorButton,
-                                                      ),
-                                                      const SizedBox(
-                                                        height: sizedBoxSmall,
-                                                      ),
-                                                      index + 1 !=
-                                                              providerDetailProject
-                                                                  .listPrjItem
-                                                                  .length
-                                                          ? Divider(
-                                                              indent: ScreenSize
-                                                                      .width *
-                                                                  0.1,
-                                                              endIndent:
-                                                                  ScreenSize
-                                                                          .width *
-                                                                      0.1,
-                                                              color:
-                                                                  Colors.black,
-                                                              height: 4,
-                                                              // thickness: 4,
-                                                            )
-                                                          : Container(),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      )
-                                    : Container(),
-                          ),
+                          // CustomButton(
+                          //   text: textProjectItem,
+                          //   function: () {
+                          //     providerDetailProject.changeIconProjectItem();
+                          //     providerDetailProject.changeShowProjectItem();
+                          //   },
+                          //   height: heightButton,
+                          //   width: ScreenSize.width * 0.9,
+                          //   textStyle: providerTextStyle.textStyleTextBold(),
+                          //   borderRadius: borderRadiusButtonLarge,
+                          //   color: colorButton,
+                          //   iconSuffix: providerDetailProject.iconProjectItem,
+                          //   colorIcon: colorTextBlack,
+                          // ),
+                          // Consumer<AddProjectViewModel>(
+                          //   builder: (context, providerDetailProject, _) =>
+                          //       (providerDetailProject.isShowProjectItem)
+                          //           ? Container(
+                          //               height: 200,
+                          //               child: Column(
+                          //                 children: [
+                          //                   Row(
+                          //                     mainAxisAlignment:
+                          //                         MainAxisAlignment
+                          //                             .spaceBetween,
+                          //                     children: [
+                          //                       Text(
+                          //                         "Số lượng: ${providerDetailProject.listPrjItem.length}",
+                          //                         style: const TextStyle(
+                          //                           color: Colors.black,
+                          //                           fontSize: 15,
+                          //                           fontFamily: 'Inter',
+                          //                           fontWeight: FontWeight.w900,
+                          //                           height: 0,
+                          //                         ),
+                          //                       ),
+                          //                       CupertinoButton(
+                          //                         child: const Text(
+                          //                           "Thêm",
+                          //                           style: TextStyle(
+                          //                             decoration: TextDecoration
+                          //                                 .underline,
+                          //                             color: Colors.black,
+                          //                             fontSize: 15,
+                          //                             fontFamily: 'Inter',
+                          //                             fontWeight:
+                          //                                 FontWeight.w900,
+                          //                             height: 0,
+                          //                           ),
+                          //                         ),
+                          //                         onPressed: () {
+                          //                           Navigator.push(
+                          //                               context,
+                          //                               MaterialPageRoute(
+                          //                                 builder: (context) =>
+                          //                                     AddNewProjectItem(),
+                          //                               ));
+                          //                         },
+                          //                       )
+                          //                     ],
+                          //                   ),
+                          //                   if (providerDetailProject
+                          //                           .listPrjItem.length !=
+                          //                       0)
+                          //                     Expanded(
+                          //                       child: ListView.builder(
+                          //                         shrinkWrap: true,
+                          //                         itemCount:
+                          //                             providerDetailProject
+                          //                                 .listPrjItem.length,
+                          //                         itemBuilder:
+                          //                             (context, index) =>
+                          //                                 Column(
+                          //                           children: [
+                          //                             const SizedBox(
+                          //                               height: sizedBoxSmall,
+                          //                             ),
+                          //                             CustomButton(
+                          //                               text:
+                          //                                   "Hạng mục ${index + 1}",
+                          //                               function: () {
+                          //                                 Navigator.pushNamed(
+                          //                                     context,
+                          //                                     routeViewProjectItemPage);
+                          //                               },
+                          //                               height:
+                          //                                   heightButton * 0.8,
+                          //                               width:
+                          //                                   ScreenSize.width *
+                          //                                       0.7,
+                          //                               textStyle: providerTextStyle
+                          //                                   .textStyleTextBold(),
+                          //                               borderRadius:
+                          //                                   borderRadiusButtonLarge,
+                          //                               color: colorButton,
+                          //                             ),
+                          //                             const SizedBox(
+                          //                               height: sizedBoxSmall,
+                          //                             ),
+                          //                             index + 1 !=
+                          //                                     providerDetailProject
+                          //                                         .listPrjItem
+                          //                                         .length
+                          //                                 ? Divider(
+                          //                                     indent: ScreenSize
+                          //                                             .width *
+                          //                                         0.1,
+                          //                                     endIndent:
+                          //                                         ScreenSize
+                          //                                                 .width *
+                          //                                             0.1,
+                          //                                     color:
+                          //                                         Colors.black,
+                          //                                     height: 4,
+                          //                                     // thickness: 4,
+                          //                                   )
+                          //                                 : Container(),
+                          //                           ],
+                          //                         ),
+                          //                       ),
+                          //                     ),
+                          //                 ],
+                          //               ),
+                          //             )
+                          //           : Container(),
+                          // ),
                         ],
                       ),
                     ),
