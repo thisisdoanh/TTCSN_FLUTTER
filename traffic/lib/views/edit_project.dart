@@ -84,7 +84,7 @@ class _EditProjectState extends State<EditProject> {
         .address;
     controllerStatus.text = Provider.of<Controller>(context, listen: false)
         .projectDetailID!
-        .budget
+        .status
         .toString();
     controllerDescription.text = Provider.of<Controller>(context, listen: false)
         .projectDetailID!
@@ -115,11 +115,11 @@ class _EditProjectState extends State<EditProject> {
     final providerController = Provider.of<Controller>(context);
 
     String region = "";
-    String address = "";
+    String address = "Lỗi API Google Place. Trả về vị trí mặc định (21,102)";
     String name = "";
     String phone = "";
-    double lat = 0;
-    double lng = 0;
+    double lat = 21;
+    double lng = 102;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -642,7 +642,7 @@ class _EditProjectState extends State<EditProject> {
                 ),
                 Center(
                   child: CustomButton(
-                    text: "Tạo dự án",
+                    text: "Sửa dự án",
                     function: () async {
                       if (formKey.currentState!.validate()) {
                         if (context.mounted) {
@@ -654,7 +654,9 @@ class _EditProjectState extends State<EditProject> {
                           }
 
                           String message = await ApiServices(context)
-                              .createLocation(
+                              .updateLocation(
+                                  providerController.projectDetailID!.id
+                                      .toString(),
                                   address,
                                   "",
                                   lat,
@@ -663,7 +665,8 @@ class _EditProjectState extends State<EditProject> {
                                   phone,
                                   region);
 
-                          message = await ApiServices(context).createProject(
+                          message = await ApiServices(context).updateProject(
+                              providerController.projectDetailID!.id.toString(),
                               controllerName.text,
                               controllerMaterial.text,
                               controllerDescription.text,
@@ -672,26 +675,26 @@ class _EditProjectState extends State<EditProject> {
                               controllerStatus.text,
                               int.parse(controllerBudget.text));
 
-                          for (int i = 0;
-                              i <
-                                  context
-                                      .read<AddProjectViewModel>()
-                                      .listPrjItem
-                                      .length;
-                              i++) {
-                            message = await ApiServices(context).addProjectItem(
-                                Provider.of<AddProjectViewModel>(context,
-                                        listen: false)
-                                    .id,
-                                context
-                                    .read<AddProjectViewModel>()
-                                    .listPrjItem[i]
-                                    .id
-                                    .toString());
-                            if (message.toLowerCase() != "success") {
-                              break;
-                            }
-                          }
+                          // for (int i = 0;
+                          //     i <
+                          //         context
+                          //             .read<AddProjectViewModel>()
+                          //             .listPrjItem
+                          //             .length;
+                          //     i++) {
+                          //   message = await ApiServices(context).addProjectItem(
+                          //       Provider.of<AddProjectViewModel>(context,
+                          //               listen: false)
+                          //           .id,
+                          //       context
+                          //           .read<AddProjectViewModel>()
+                          //           .listPrjItem[i]
+                          //           .id
+                          //           .toString());
+                          //   if (message.toLowerCase() != "success") {
+                          //     break;
+                          //   }
+                          // }
                           context.read<Controller>().setState();
 
                           showDialog(

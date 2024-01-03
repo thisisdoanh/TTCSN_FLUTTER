@@ -9,7 +9,7 @@ part 'user.g.dart';
 class User {
   int id;
   String name;
-  int age;
+  int? age;
   String? gender;
   String? address;
   String username;

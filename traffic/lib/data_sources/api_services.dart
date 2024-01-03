@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -8,12 +10,9 @@ import 'package:traffic/models/project_detail.dart';
 import 'package:http/http.dart' as http;
 import 'package:traffic/models/token.dart';
 import 'package:traffic/models/user.dart';
-import 'package:traffic/resources/utils/fetch_data_exeption.dart';
-import 'package:traffic/resources/widgets/aleart_dialog.dart';
 import 'package:traffic/view_models/add_project_view_model.dart';
 import 'package:traffic/view_models/controller.dart';
 
-import '../models/google_map_location.dart';
 import '../models/location.dart';
 
 class ApiServices {
@@ -35,9 +34,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -46,13 +43,10 @@ class ApiServices {
       Provider.of<Controller>(context, listen: false).projectDetailUser =
           dataContainer.map((e) => ProjectDetail.fromJson(e)).toList();
 
-      print("Hello ");
-      print(Provider.of<Controller>(context, listen: false).user);
       return "";
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -71,9 +65,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -83,12 +75,11 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
 
-  Future<dynamic> fetchAllUser() async{
+  Future<dynamic> fetchAllUser() async {
     var api = "${ApiUrls.baseUri}${ApiUrls.uriUser}all-users";
 
     try {
@@ -102,9 +93,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -116,7 +105,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -135,9 +123,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -146,13 +132,10 @@ class ApiServices {
       Provider.of<Controller>(context, listen: false).projectDetailID =
           ProjectDetail.fromJson(dataContainer);
 
-      print("Hello ");
-      print(Provider.of<Controller>(context, listen: false).projectDetailID);
       return "";
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -173,9 +156,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -185,13 +166,10 @@ class ApiServices {
       Provider.of<Controller>(context, listen: false).user =
           User.fromJson(dataContainer);
 
-      print("Hello ");
-      print(Provider.of<Controller>(context, listen: false).user);
       return "";
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -202,8 +180,8 @@ class ApiServices {
             Provider.of<Controller>(context, listen: false)
                 .user!
                 .id
-                .toString() ??
-        "0";
+                .toString();
+
 
     try {
       var response = await http.get(
@@ -216,25 +194,20 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
-      Map<String, dynamic> dataContainer =
+      var dataContainer =
           json.decode(jsonBody)["body"]["data"];
 
       Provider.of<Controller>(context, listen: false).user =
           User.fromJson(dataContainer);
 
-      print("Hello ");
-      print(Provider.of<Controller>(context, listen: false).user);
       return "";
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -258,9 +231,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -275,7 +246,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -313,9 +283,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -323,32 +291,26 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
 
-  Future<String> addUserToProject(
-    String projectId, String userID
-  ) async {
-    var api = "${ApiUrls.baseUri}${ApiUrls.uriProject}$projectId/$userID";
+  Future<String> addUserToProject(String projectId, String userID) async {
+    var api =
+        "${ApiUrls.baseUri}${ApiUrls.uriProject}${ApiUrls.uriUser}$projectId/$userID";
 
     try {
-      var response = await http
-          .post(
-            Uri.parse(api),
-            headers: {
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-          )
-          .timeout(Duration(seconds: timeOutDuration));
+      var response = await http.post(
+        Uri.parse(api),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      ).timeout(Duration(seconds: timeOutDuration));
       final String jsonBody = utf8.decode(response.bodyBytes);
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -358,7 +320,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -398,9 +359,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -408,7 +367,104 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
+      return e.toString();
+    }
+  }
+
+  Future<String> updateLocation(
+    String id,
+    String address,
+    String image,
+    double lat,
+    double lng,
+    String name,
+    String phone,
+    String region,
+  ) async {
+    var api = ApiUrls.baseUri + ApiUrls.uriLocation;
+
+    try {
+      var response = await http
+          .put(
+            Uri.parse(api),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: json.encode(
+              {
+                "id": id,
+                "address": address,
+                "image": image,
+                "lat": lat,
+                "lng": lng,
+                "name": name,
+                "phone": phone,
+                "region": region
+              },
+            ),
+          )
+          .timeout(Duration(seconds: timeOutDuration));
+      final String jsonBody = utf8.decode(response.bodyBytes);
+      final int statusCode = response.statusCode;
+
+      if (statusCode != 200 || jsonBody == null) {
+        String dataContainer = json.decode(jsonBody)["message"];
+        return dataContainer;
+      }
+
+      return "Success";
+    } on TimeoutException {
+      return "Time out";
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future<String> updateProject(
+    String id,
+    String name,
+    String material,
+    String description,
+    String startday,
+    String deadline,
+    String statusPrj,
+    int budget,
+  ) async {
+    var api = ApiUrls.baseUri + ApiUrls.uriProject;
+
+    try {
+      var response = await http
+          .put(
+            Uri.parse(api),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: json.encode(
+              {
+                "id": id,
+                "name": name,
+                "material": material,
+                "budget": budget,
+                "description": description,
+                "startday": startday,
+                "deadline": deadline,
+                "status": statusPrj,
+              },
+            ),
+          )
+          .timeout(Duration(seconds: timeOutDuration));
+      final String jsonBody = utf8.decode(response.bodyBytes);
+      final int statusCode = response.statusCode;
+
+      if (statusCode != 200 || jsonBody == null) {
+        String dataContainer = json.decode(jsonBody)["message"];
+        return dataContainer;
+      }
+
+      return "Success";
+    } on TimeoutException {
+      return "Time out";
+    } catch (e) {
       return e.toString();
     }
   }
@@ -447,9 +503,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -466,7 +520,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -505,9 +558,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -519,7 +570,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -558,9 +608,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -587,7 +635,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -605,9 +652,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -617,7 +662,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -636,9 +680,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -647,7 +689,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -668,9 +709,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -679,7 +718,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }
@@ -697,9 +735,7 @@ class ApiServices {
       final int statusCode = response.statusCode;
 
       if (statusCode != 200 || jsonBody == null) {
-        print(response.reasonPhrase);
         String dataContainer = json.decode(jsonBody)["message"];
-        print(dataContainer);
         return dataContainer;
       }
 
@@ -708,7 +744,6 @@ class ApiServices {
     } on TimeoutException {
       return "Time out";
     } catch (e) {
-      print(e.toString());
       return e.toString();
     }
   }

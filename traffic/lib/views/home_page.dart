@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:traffic/data_sources/data_user.dart';
+import 'package:traffic/models/project_detail.dart';
 import 'package:traffic/resources/routes_screens.dart';
 import 'package:traffic/resources/widgets/appbar.dart';
 import 'package:traffic/view_models/controller.dart';
 import 'package:traffic/view_models/map_view_model.dart';
 import 'package:traffic/view_models/project_detail.dart';
+import 'package:traffic/views/project_user.dart';
 
 import '../data_sources/api_services.dart';
 import '../resources/colors.dart';
@@ -37,6 +39,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Future getUser() async {
     await ApiServices(context).fetchUser();
+    await ApiServices(context).fetchUserByID();
   }
 
   @override
@@ -57,7 +60,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
         body: Container(
           height: ScreenSize.height,
           width: ScreenSize.width,
-          decoration: providerColor.isGradient ? providerColor.gradientColorBackground : null,
+          decoration: providerColor.isGradient
+              ? providerColor.gradientColorBackground
+              : null,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -80,8 +85,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 text: textTextMapHomePage,
                 function: () async {
                   OverlayState overlayState = Overlay.of(context);
-                  List<OverlayEntry> entries =
-                  createOverlayLoading(context);
+                  List<OverlayEntry> entries = createOverlayLoading(context);
                   for (var element in entries) {
                     overlayState.insert(element);
                   }
@@ -107,7 +111,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 iconSuffix: Icons.arrow_forward_ios,
                 colorIcon: providerTextStyle.textColor,
               ),
-              context.watch<Controller>().token!.authorities[0]["authority"]!.toLowerCase().contains("user")
+              context
+                      .watch<Controller>()
+                      .token!
+                      .authorities[0]["authority"]!
+                      .toLowerCase()
+                      .contains("user")
                   ? Column(
                       children: [
                         const SizedBox(
@@ -116,16 +125,30 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         CustomButton(
                           text: textTextProjectHomePage,
                           function: () async {
-                            // context.read<DetailProjectViewModel>().projectDetail =
-                            //     await ApiServices().fetchUser();
-                            context
-                                .read<DetailProjectViewModel>()
-                                .changeShowProjectItemToDefault();
-                            Navigator.pushNamed(context, routeViewProjectPage);
+                            // await ApiServices(context).fetchUserByID();
+                            OverlayState overlayState = Overlay.of(context);
+                            List<OverlayEntry> entries =
+                            createOverlayLoading(context);
+                            for (var element in entries) {
+                              overlayState.insert(element);
+                            }
+                            await ApiServices(context).fetchLocationById(Provider.of<Controller>(context, listen: false).user!.project!.id.toString());
+                            await ApiServices(context).fetchProjectDetailID(Provider.of<Controller>(context, listen: false).user!.project!.id);
+                            for (var element in entries) {
+                              element.remove();
+                            }
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ProjectUserScreen(projectDetail: providerProject.projectDetailID),));
+
+                            // Navigator.pushNamed(
+                            //     context, routeViewProjectPage,
+                            //     arguments: {
+                            //       'isFetchId': 1,
+                            //     });
                           },
                           height: heightButton,
                           width: ScreenSize.width * 0.9,
-                          textStyle: providerTextStyle.textStyleTextBoldButton(),
+                          textStyle:
+                              providerTextStyle.textStyleTextBoldButton(),
                           borderRadius: borderRadiusButtonLarge,
                           color: colorButton,
                           iconLeading: Icons.map,
@@ -176,7 +199,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                           },
                           height: heightButton,
                           width: ScreenSize.width * 0.9,
-                          textStyle: providerTextStyle.textStyleTextBoldButton(),
+                          textStyle:
+                              providerTextStyle.textStyleTextBoldButton(),
                           borderRadius: borderRadiusButtonLarge,
                           color: colorButton,
                           iconLeading: Icons.map,
@@ -185,7 +209,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         ),
                       ],
                     ),
-              context.watch<Controller>().token!.authorities[0]["authority"]!.toLowerCase().contains("admin")
+              context
+                      .watch<Controller>()
+                      .token!
+                      .authorities[0]["authority"]!
+                      .toLowerCase()
+                      .contains("admin")
                   ? Column(
                       children: [
                         const SizedBox(
@@ -200,7 +229,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                           },
                           height: heightButton,
                           width: ScreenSize.width * 0.9,
-                          textStyle: providerTextStyle.textStyleTextBoldButton(),
+                          textStyle:
+                              providerTextStyle.textStyleTextBoldButton(),
                           borderRadius: borderRadiusButtonLarge,
                           color: colorButton,
                           iconLeading: Icons.map,
@@ -243,8 +273,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
     Geolocator.getPositionStream(
       locationSettings: locationSettings,
     ).listen((Position position) {
-      Provider.of<MapViewModel>(context, listen: false).lat = position.latitude.toString();
-      Provider.of<MapViewModel>(context, listen: false).long = position.longitude.toString();
+      Provider.of<MapViewModel>(context, listen: false).lat =
+          position.latitude.toString();
+      Provider.of<MapViewModel>(context, listen: false).long =
+          position.longitude.toString();
     });
   }
 }

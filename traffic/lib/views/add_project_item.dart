@@ -61,11 +61,12 @@ class _AddNewProjectItemState extends State<AddNewProjectItem> {
     final providerDetailProject = Provider.of<AddProjectViewModel>(context);
 
     String region = "";
-    String address = "";
+    String address = "Lỗi API Google Place. Trả về vị trí mặc định (21,102)";
     String name = "";
     String phone = "";
-    double lat = 0;
-    double lng = 0;
+    double lat = 21;
+    double lng = 102;
+
 
     return Scaffold(
       appBar:

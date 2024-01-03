@@ -11,6 +11,7 @@ import 'package:traffic/view_models/textstyle_view_model.dart';
 import '../resources/colors.dart';
 import '../resources/dimens.dart';
 import '../resources/strings.dart';
+import '../resources/utils/loading.dart';
 import '../resources/widgets/aleart_dialog.dart';
 import '../resources/widgets/button.dart';
 import '../view_models/color_view_model.dart';
@@ -209,12 +210,21 @@ class RegisterScreen extends StatelessWidget {
                           text: textRegister,
                           function: () async {
                             if (formKey.currentState!.validate()) {
+                              OverlayState overlayState = Overlay.of(context);
+                              List<OverlayEntry> entries = createOverlayLoading(context);
+                              for (var element in entries) {
+                                overlayState.insert(element);
+                              }
                               await providerRegister.createUser(
                                 controllerName.text,
                                 controllerUsername.text,
                                 controllerEmail.text,
                                 controllerPass.text, context,
                               );
+
+                              for (var element in entries) {
+                                element.remove();
+                              }
 
                               if (providerRegister.message != "") {
                                 CustomDialog().showErrorDialog(

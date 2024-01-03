@@ -49,11 +49,11 @@ class AddNewProject extends StatelessWidget {
     final providerDetailProject = Provider.of<AddProjectViewModel>(context);
 
     String region = "";
-    String address = "";
+    String address = "Lỗi API Google Place. Trả về vị trí mặc định (21,102)";
     String name = "";
     String phone = "";
-    double lat = 0;
-    double lng = 0;
+    double lat = 21;
+    double lng = 102;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -214,9 +214,9 @@ class AddNewProject extends StatelessWidget {
                             getPlaceDetailWithLatLng: (Prediction prediction) {
                               print("placeDetails" + prediction.lat.toString());
                               print("placeDetails" + prediction.lng.toString());
-                              lat = double.parse(prediction?.lat ?? "0");
-                              lng = double.parse(prediction?.lng ?? "0");
-                              address = prediction?.description ?? "";
+                              lat = double.parse(prediction?.lat ?? "21");
+                              lng = double.parse(prediction?.lng ?? "102");
+                              address = prediction?.description ?? "Lỗi API Google Place. Trả về mặc định";
                               region = prediction
                                       .terms![prediction.terms!.length - 1]
                                       .value ??
